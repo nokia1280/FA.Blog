@@ -1,7 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
-using Service.Implementing;
 using WebApp.Models;
 
 namespace WebApp.Controllers
@@ -74,11 +73,11 @@ namespace WebApp.Controllers
         [HttpPost]
         public IActionResult Create(string title, string urlSlug, string shortDescription, string PostContent, int categoryId)
         {
-            _postService.AddPost(new Post { Title = title, UrlSlug = urlSlug, ShortDescription = shortDescription, PostContent = PostContent, CategoryId = categoryId });
+            _postService.AddPost(new Post { Title = title, UrlSlug = urlSlug, ShortDescription = shortDescription, PostContent = PostContent, DatePublished = DateTime.Now, CategoryId = categoryId });
             return RedirectToAction("Index");
         }
 
-        public ActionResult Edit(int id)
+    public ActionResult Edit(int id)
         {
             try
             {
@@ -86,7 +85,7 @@ namespace WebApp.Controllers
 
                 if (post != null)
                 {
-                    var postVm = new PostViewModel() { Title = post.Title };
+                    var postVm = new PostViewModel() { Title = post.Title, ShortDescription = post.ShortDescription, PostContent = post.PostContent };
                     return View(postVm);
                 }
             }
@@ -137,6 +136,12 @@ namespace WebApp.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        public IActionResult Category(string name)
+        {
+            var posts = _postService.GetPostsByCategory(name);
+            return View(posts);
         }
     }
 }
